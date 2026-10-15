@@ -1,0 +1,766 @@
+{
+  "version": 1,
+  "rules": [
+    {
+      "actions": [],
+      "expected": {
+        "phase": "countdown",
+        "wave": 0,
+        "score": 0,
+        "kills": 0,
+        "lives": 3,
+        "missiles": 3,
+        "weapon": "guns",
+        "strength": 1,
+        "weaponTime": 0,
+        "shield": 0,
+        "speed": 0,
+        "orbits": 0,
+        "orbitTime": 0,
+        "companionMode": "wingmen",
+        "companionTime": 0,
+        "scatterTime": 0,
+        "fleet": 0,
+        "fleetTime": 0,
+        "assault": 0,
+        "assaultTime": 0
+      }
+    },
+    {
+      "actions": [
+        "machine"
+      ],
+      "expected": {
+        "phase": "countdown",
+        "wave": 0,
+        "score": 0,
+        "kills": 0,
+        "lives": 3,
+        "missiles": 3,
+        "weapon": "machine",
+        "strength": 2,
+        "weaponTime": 12,
+        "shield": 0,
+        "speed": 0,
+        "orbits": 0,
+        "orbitTime": 0,
+        "companionMode": "wingmen",
+        "companionTime": 0,
+        "scatterTime": 0,
+        "fleet": 0,
+        "fleetTime": 0,
+        "assault": 0,
+        "assaultTime": 0
+      }
+    },
+    {
+      "actions": [
+        "laser"
+      ],
+      "expected": {
+        "phase": "countdown",
+        "wave": 0,
+        "score": 0,
+        "kills": 0,
+        "lives": 3,
+        "missiles": 3,
+        "weapon": "laser",
+        "strength": 1,
+        "weaponTime": 12,
+        "shield": 0,
+        "speed": 0,
+        "orbits": 0,
+        "orbitTime": 0,
+        "companionMode": "wingmen",
+        "companionTime": 0,
+        "scatterTime": 0,
+        "fleet": 0,
+        "fleetTime": 0,
+        "assault": 0,
+        "assaultTime": 0
+      }
+    },
+    {
+      "actions": [
+        "missile"
+      ],
+      "expected": {
+        "phase": "countdown",
+        "wave": 0,
+        "score": 0,
+        "kills": 0,
+        "lives": 3,
+        "missiles": 4,
+        "weapon": "guns",
+        "strength": 1,
+        "weaponTime": 0,
+        "shield": 0,
+        "speed": 0,
+        "orbits": 0,
+        "orbitTime": 0,
+        "companionMode": "wingmen",
+        "companionTime": 0,
+        "scatterTime": 0,
+        "fleet": 0,
+        "fleetTime": 0,
+        "assault": 0,
+        "assaultTime": 0
+      }
+    },
+    {
+      "actions": [
+        "shield"
+      ],
+      "expected": {
+        "phase": "countdown",
+        "wave": 0,
+        "score": 0,
+        "kills": 0,
+        "lives": 3,
+        "missiles": 3,
+        "weapon": "guns",
+        "strength": 1,
+        "weaponTime": 0,
+        "shield": 8,
+        "speed": 0,
+        "orbits": 0,
+        "orbitTime": 0,
+        "companionMode": "wingmen",
+        "companionTime": 0,
+        "scatterTime": 0,
+        "fleet": 0,
+        "fleetTime": 0,
+        "assault": 0,
+        "assaultTime": 0
+      }
+    },
+    {
+      "actions": [
+        "speed"
+      ],
+      "expected": {
+        "phase": "countdown",
+        "wave": 0,
+        "score": 0,
+        "kills": 0,
+        "lives": 3,
+        "missiles": 3,
+        "weapon": "guns",
+        "strength": 1,
+        "weaponTime": 0,
+        "shield": 0,
+        "speed": 15,
+        "orbits": 0,
+        "orbitTime": 0,
+        "companionMode": "wingmen",
+        "companionTime": 0,
+        "scatterTime": 0,
+        "fleet": 0,
+        "fleetTime": 0,
+        "assault": 0,
+        "assaultTime": 0
+      }
+    },
+    {
+      "actions": [
+        "orbit"
+      ],
+      "expected": {
+        "phase": "countdown",
+        "wave": 0,
+        "score": 0,
+        "kills": 0,
+        "lives": 3,
+        "missiles": 3,
+        "weapon": "guns",
+        "strength": 1,
+        "weaponTime": 0,
+        "shield": 0,
+        "speed": 0,
+        "orbits": 1,
+        "orbitTime": 10,
+        "companionMode": "wingmen",
+        "companionTime": 0,
+        "scatterTime": 0,
+        "fleet": 0,
+        "fleetTime": 0,
+        "assault": 0,
+        "assaultTime": 0
+      }
+    },
+    {
+      "actions": [
+        "wingmen"
+      ],
+      "expected": {
+        "phase": "countdown",
+        "wave": 0,
+        "score": 0,
+        "kills": 0,
+        "lives": 3,
+        "missiles": 3,
+        "weapon": "guns",
+        "strength": 1,
+        "weaponTime": 0,
+        "shield": 0,
+        "speed": 0,
+        "orbits": 0,
+        "orbitTime": 0,
+        "companionMode": "wingmen",
+        "companionTime": 12,
+        "scatterTime": 0,
+        "fleet": 0,
+        "fleetTime": 0,
+        "assault": 0,
+        "assaultTime": 0
+      }
+    },
+    {
+      "actions": [
+        "spread"
+      ],
+      "expected": {
+        "phase": "countdown",
+        "wave": 0,
+        "score": 0,
+        "kills": 0,
+        "lives": 3,
+        "missiles": 3,
+        "weapon": "guns",
+        "strength": 1,
+        "weaponTime": 0,
+        "shield": 0,
+        "speed": 0,
+        "orbits": 0,
+        "orbitTime": 0,
+        "companionMode": "spread",
+        "companionTime": 12,
+        "scatterTime": 0,
+        "fleet": 0,
+        "fleetTime": 0,
+        "assault": 0,
+        "assaultTime": 0
+      }
+    },
+    {
+      "actions": [
+        "scatter"
+      ],
+      "expected": {
+        "phase": "countdown",
+        "wave": 0,
+        "score": 0,
+        "kills": 0,
+        "lives": 3,
+        "missiles": 3,
+        "weapon": "guns",
+        "strength": 1,
+        "weaponTime": 0,
+        "shield": 0,
+        "speed": 0,
+        "orbits": 0,
+        "orbitTime": 0,
+        "companionMode": "wingmen",
+        "companionTime": 0,
+        "scatterTime": 12,
+        "fleet": 0,
+        "fleetTime": 0,
+        "assault": 0,
+        "assaultTime": 0
+      }
+    },
+    {
+      "actions": [
+        "mega"
+      ],
+      "expected": {
+        "phase": "countdown",
+        "wave": 0,
+        "score": 0,
+        "kills": 0,
+        "lives": 3,
+        "missiles": 3,
+        "weapon": "mega",
+        "strength": 3,
+        "weaponTime": 12,
+        "shield": 0,
+        "speed": 0,
+        "orbits": 0,
+        "orbitTime": 0,
+        "companionMode": "wingmen",
+        "companionTime": 0,
+        "scatterTime": 0,
+        "fleet": 0,
+        "fleetTime": 0,
+        "assault": 0,
+        "assaultTime": 0
+      }
+    },
+    {
+      "actions": [
+        "fleet"
+      ],
+      "expected": {
+        "phase": "countdown",
+        "wave": 0,
+        "score": 0,
+        "kills": 0,
+        "lives": 3,
+        "missiles": 3,
+        "weapon": "guns",
+        "strength": 1,
+        "weaponTime": 0,
+        "shield": 0,
+        "speed": 0,
+        "orbits": 0,
+        "orbitTime": 0,
+        "companionMode": "wingmen",
+        "companionTime": 0,
+        "scatterTime": 0,
+        "fleet": 4,
+        "fleetTime": 10,
+        "assault": 0,
+        "assaultTime": 0
+      }
+    },
+    {
+      "actions": [
+        "assault"
+      ],
+      "expected": {
+        "phase": "countdown",
+        "wave": 0,
+        "score": 0,
+        "kills": 0,
+        "lives": 3,
+        "missiles": 3,
+        "weapon": "guns",
+        "strength": 1,
+        "weaponTime": 0,
+        "shield": 0,
+        "speed": 0,
+        "orbits": 0,
+        "orbitTime": 0,
+        "companionMode": "wingmen",
+        "companionTime": 0,
+        "scatterTime": 0,
+        "fleet": 0,
+        "fleetTime": 0,
+        "assault": 6,
+        "assaultTime": 20
+      }
+    },
+    {
+      "actions": [
+        "laser",
+        "laser",
+        "laser",
+        "laser"
+      ],
+      "expected": {
+        "phase": "countdown",
+        "wave": 0,
+        "score": 0,
+        "kills": 0,
+        "lives": 3,
+        "missiles": 3,
+        "weapon": "laser",
+        "strength": 3,
+        "weaponTime": 12,
+        "shield": 0,
+        "speed": 0,
+        "orbits": 0,
+        "orbitTime": 0,
+        "companionMode": "wingmen",
+        "companionTime": 0,
+        "scatterTime": 0,
+        "fleet": 0,
+        "fleetTime": 0,
+        "assault": 0,
+        "assaultTime": 0
+      }
+    },
+    {
+      "actions": [
+        "machine",
+        "laser"
+      ],
+      "expected": {
+        "phase": "countdown",
+        "wave": 0,
+        "score": 0,
+        "kills": 0,
+        "lives": 3,
+        "missiles": 3,
+        "weapon": "laser",
+        "strength": 1,
+        "weaponTime": 12,
+        "shield": 0,
+        "speed": 0,
+        "orbits": 0,
+        "orbitTime": 0,
+        "companionMode": "wingmen",
+        "companionTime": 0,
+        "scatterTime": 0,
+        "fleet": 0,
+        "fleetTime": 0,
+        "assault": 0,
+        "assaultTime": 0
+      }
+    },
+    {
+      "actions": [
+        "mega",
+        "machine"
+      ],
+      "expected": {
+        "phase": "countdown",
+        "wave": 0,
+        "score": 0,
+        "kills": 0,
+        "lives": 3,
+        "missiles": 3,
+        "weapon": "machine",
+        "strength": 2,
+        "weaponTime": 12,
+        "shield": 0,
+        "speed": 0,
+        "orbits": 0,
+        "orbitTime": 0,
+        "companionMode": "wingmen",
+        "companionTime": 0,
+        "scatterTime": 0,
+        "fleet": 0,
+        "fleetTime": 0,
+        "assault": 0,
+        "assaultTime": 0
+      }
+    },
+    {
+      "actions": [
+        "orbit",
+        "orbit",
+        "orbit",
+        "orbit"
+      ],
+      "expected": {
+        "phase": "countdown",
+        "wave": 0,
+        "score": 0,
+        "kills": 0,
+        "lives": 3,
+        "missiles": 3,
+        "weapon": "guns",
+        "strength": 1,
+        "weaponTime": 0,
+        "shield": 0,
+        "speed": 0,
+        "orbits": 3,
+        "orbitTime": 10,
+        "companionMode": "wingmen",
+        "companionTime": 0,
+        "scatterTime": 0,
+        "fleet": 0,
+        "fleetTime": 0,
+        "assault": 0,
+        "assaultTime": 0
+      }
+    },
+    {
+      "actions": [
+        "missile",
+        "missile",
+        "missile",
+        "missile",
+        "missile",
+        "missile",
+        "missile",
+        "missile",
+        "missile",
+        "missile",
+        "missile",
+        "missile",
+        "missile",
+        "missile",
+        "missile"
+      ],
+      "expected": {
+        "phase": "countdown",
+        "wave": 0,
+        "score": 0,
+        "kills": 0,
+        "lives": 3,
+        "missiles": 10,
+        "weapon": "guns",
+        "strength": 1,
+        "weaponTime": 0,
+        "shield": 0,
+        "speed": 0,
+        "orbits": 0,
+        "orbitTime": 0,
+        "companionMode": "wingmen",
+        "companionTime": 0,
+        "scatterTime": 0,
+        "fleet": 0,
+        "fleetTime": 0,
+        "assault": 0,
+        "assaultTime": 0
+      }
+    }
+  ],
+  "canyon": [
+    {
+      "y": -40,
+      "phase": -0.9,
+      "expected": -0.0029309351048905337
+    },
+    {
+      "y": -40,
+      "phase": 0.9,
+      "expected": 0.0017304966367810435
+    },
+    {
+      "y": -40,
+      "phase": 2.7,
+      "expected": 0.0006067937835250732
+    },
+    {
+      "y": -40,
+      "phase": 4.7,
+      "expected": -0.03437953202053904
+    },
+    {
+      "y": -17,
+      "phase": -0.9,
+      "expected": -0.017314690368584715
+    },
+    {
+      "y": -17,
+      "phase": 0.9,
+      "expected": -0.003167293094600602
+    },
+    {
+      "y": -17,
+      "phase": 2.7,
+      "expected": 0.016973584106634923
+    },
+    {
+      "y": -17,
+      "phase": 4.7,
+      "expected": 0.0006366795458434341
+    },
+    {
+      "y": -6,
+      "phase": -0.9,
+      "expected": -0.017868629309414245
+    },
+    {
+      "y": -6,
+      "phase": 0.9,
+      "expected": -0.0283465707942305
+    },
+    {
+      "y": -6,
+      "phase": 2.7,
+      "expected": 0.0027255887720821193
+    },
+    {
+      "y": -6,
+      "phase": 4.7,
+      "expected": -0.03846157864173438
+    },
+    {
+      "y": -0.5,
+      "phase": -0.9,
+      "expected": 0.03448039619682095
+    },
+    {
+      "y": -0.5,
+      "phase": 0.9,
+      "expected": -0.045820882126974535
+    },
+    {
+      "y": -0.5,
+      "phase": 2.7,
+      "expected": 0.021049607208340603
+    },
+    {
+      "y": -0.5,
+      "phase": 4.7,
+      "expected": -0.013959249083278336
+    },
+    {
+      "y": 0,
+      "phase": -0.9,
+      "expected": 0.04006817642581882
+    },
+    {
+      "y": 0,
+      "phase": 0.9,
+      "expected": -0.042517977520648856
+    },
+    {
+      "y": 0,
+      "phase": 2.7,
+      "expected": 0.01809244136571942
+    },
+    {
+      "y": 0,
+      "phase": 4.7,
+      "expected": -0.013416483899534797
+    },
+    {
+      "y": 1.5,
+      "phase": -0.9,
+      "expected": 0.048100251387068964
+    },
+    {
+      "y": 1.5,
+      "phase": 0.9,
+      "expected": -0.03835647445346512
+    },
+    {
+      "y": 1.5,
+      "phase": 2.7,
+      "expected": 0.009282516898154427
+    },
+    {
+      "y": 1.5,
+      "phase": 4.7,
+      "expected": -0.015607947764106938
+    },
+    {
+      "y": 6,
+      "phase": -0.9,
+      "expected": 0.0344038892580902
+    },
+    {
+      "y": 6,
+      "phase": 0.9,
+      "expected": 0.017830439909281265
+    },
+    {
+      "y": 6,
+      "phase": 2.7,
+      "expected": -0.02821236399290501
+    },
+    {
+      "y": 6,
+      "phase": 4.7,
+      "expected": -0.013714904053747886
+    },
+    {
+      "y": 17,
+      "phase": -0.9,
+      "expected": 0.01000020407038209
+    },
+    {
+      "y": 17,
+      "phase": 0.9,
+      "expected": 0.01852705845015226
+    },
+    {
+      "y": 17,
+      "phase": 2.7,
+      "expected": -0.013203660616352864
+    },
+    {
+      "y": 17,
+      "phase": 4.7,
+      "expected": -0.001147965777683565
+    },
+    {
+      "y": 40,
+      "phase": -0.9,
+      "expected": 0.01282063380298494
+    },
+    {
+      "y": 40,
+      "phase": 0.9,
+      "expected": 0.013343171509000985
+    },
+    {
+      "y": 40,
+      "phase": 2.7,
+      "expected": -0.004944632594335443
+    },
+    {
+      "y": 40,
+      "phase": 4.7,
+      "expected": 0.017292003022081174
+    }
+  ],
+  "powers": {
+    "machine": {
+      "label": "MACHINE GUN",
+      "color": "gold",
+      "duration": 12,
+      "weight": 11
+    },
+    "laser": {
+      "label": "TWIN LASERS",
+      "color": "cyan",
+      "duration": 12,
+      "weight": 11
+    },
+    "missile": {
+      "label": "MISSILE +1",
+      "color": "orange",
+      "weight": 17
+    },
+    "shield": {
+      "label": "SHIELD",
+      "color": "mint",
+      "duration": 8,
+      "weight": 11
+    },
+    "speed": {
+      "label": "SPEED BOOST",
+      "color": "violet",
+      "duration": 15,
+      "weight": 11
+    },
+    "orbit": {
+      "label": "ORBITAL GUARD",
+      "color": "mint",
+      "duration": 10,
+      "weight": 30
+    },
+    "wingmen": {
+      "label": "WING ORBS",
+      "color": "cyan",
+      "duration": 12,
+      "weight": 8
+    },
+    "spread": {
+      "label": "TRIPLE WING ORBS",
+      "color": "pink",
+      "duration": 12,
+      "weight": 8
+    },
+    "scatter": {
+      "label": "SCATTER BOMBS",
+      "color": "orange",
+      "duration": 12,
+      "weight": 8
+    },
+    "mega": {
+      "label": "MEGA LASER",
+      "color": "gold",
+      "duration": 12,
+      "weight": 8
+    },
+    "fleet": {
+      "label": "CALL IN THE FLEET",
+      "color": "cyan",
+      "duration": 10,
+      "weight": 8
+    },
+    "assault": {
+      "label": "ASSAULT FLEET",
+      "color": "orange",
+      "duration": 20,
+      "weight": 8
+    }
+  }
+}

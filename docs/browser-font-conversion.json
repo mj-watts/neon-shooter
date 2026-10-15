@@ -1,0 +1,7 @@
+{
+  "source": "../browser-neon-shooter/public/fonts/neue-power.woff2",
+  "source_sha256": "36958d25f3b128d5262b9d07e60d7641ee2b908d400107e63bd1170f2feb6873",
+  "destination": "Assets/NeonShooter/Resources/Fonts/NeuePower.ttf",
+  "destination_sha256": "82392715c80c0ec950b8ac2633310578b758cae76ffb2db9fed18544ed06beae",
+  "conversion": "woff2_decompress (installed Homebrew woff2 utility)"
+}

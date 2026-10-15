@@ -1,0 +1,4 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><EnableDefaultCompileItems>false</EnableDefaultCompileItems><Nullable>disable</Nullable><ImplicitUsings>disable</ImplicitUsings></PropertyGroup>
+  <ItemGroup><Compile Include="../../Assets/NeonShooter/Core/*.cs"/><Compile Include="../../Assets/NeonShooter/Tests/EditMode/GameplayChecks.cs"/><Compile Include="Program.cs"/><Compile Include="BrowserParity.cs"/><Compile Include="SoakCheck.cs"/><None Include="Fixtures/*.json" CopyToOutputDirectory="PreserveNewest"/></ItemGroup>
+</Project>

@@ -1,0 +1,57 @@
+[
+  {
+    "source": "src/assets/sound/bigship.mp3",
+    "destination": "Assets/NeonShooter/Resources/Audio/bigship.mp3",
+    "sha256": "6f085160a5bc22f3ceddfe0b26811cf82e563143720b50afde9498a3d808eaca"
+  },
+  {
+    "source": "src/assets/sound/engaging-2.mp3",
+    "destination": "Assets/NeonShooter/Resources/Audio/engaging-2.mp3",
+    "sha256": "030b754dc89cad1ce0be48be902fb7222b8ca053dacb0d372156f0a32056324c"
+  },
+  {
+    "source": "src/assets/sound/engaging.mp3",
+    "destination": "Assets/NeonShooter/Resources/Audio/engaging.mp3",
+    "sha256": "24a4ac235ceccab068e1c821a3ecad8312eef4834b9a28fbde47c453ad95ed62"
+  },
+  {
+    "source": "src/assets/sound/gameover.mp3",
+    "destination": "Assets/NeonShooter/Resources/Audio/gameover.mp3",
+    "sha256": "4bc382db6df0f0b615ae4215241cff20a0be3ee7f86cf4a434b14ca589a98c89"
+  },
+  {
+    "source": "src/assets/sound/mayday.mp3",
+    "destination": "Assets/NeonShooter/Resources/Audio/mayday.mp3",
+    "sha256": "851ac7900074b74c2cbd4978e9686e1a76dcb63be69aa621c6fe1ce3ba8b5e3f"
+  },
+  {
+    "source": "src/assets/sound/siren.mp3",
+    "destination": "Assets/NeonShooter/Resources/Audio/siren.mp3",
+    "sha256": "6e62072979852a2e383ed3e22c18e7838bcb06d1abdec13fe8fbd009b7670d54"
+  },
+  {
+    "source": "src/assets/sound/soundtrack.mp3",
+    "destination": "Assets/NeonShooter/Resources/Audio/soundtrack.mp3",
+    "sha256": "7a1db96cdc896e6396d8ba0799c7779ba779c3b005897748e7c1e15bdaaead7a"
+  },
+  {
+    "source": "public/fonts/OffBit.ttf",
+    "destination": "Assets/NeonShooter/Resources/Fonts/OffBit.ttf",
+    "sha256": "e7da22f309bdf97a470fd13a3410d58adc4d66d599fa238d940557d83c6bcdde"
+  },
+  {
+    "source": "public/fonts/OffBit101.ttf",
+    "destination": "Assets/NeonShooter/Resources/Fonts/OffBit101.ttf",
+    "sha256": "7d2f59cd5ef93b3efa0b4885022d7b4c7970b686e8b721816b437158c38b86fa"
+  },
+  {
+    "source": "public/fonts/neue-power.woff2",
+    "destination": "docs/SourceAssets/neue-power.woff2",
+    "sha256": "36958d25f3b128d5262b9d07e60d7641ee2b908d400107e63bd1170f2feb6873"
+  },
+  {
+    "source": "public/fonts/nohemi.ttf",
+    "destination": "Assets/NeonShooter/Resources/Fonts/nohemi.ttf",
+    "sha256": "56278567f61bc9523b286a1dfda045129574e1d1ed54380cb6325cf46f69d990"
+  }
+]

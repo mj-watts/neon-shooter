@@ -1,0 +1,13 @@
+{
+  "name": "NeonShooter.EditMode",
+  "references": [
+    "NeonShooter.Core",
+    "NeonShooter.Runtime"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ],
+  "optionalUnityReferences": [
+    "TestAssemblies"
+  ]
+}

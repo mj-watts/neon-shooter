@@ -1,169 +1,156 @@
-# Browser Neon Shooter
+# Unity Neon Shooter
 
-Standalone copy of the 1MINUS1 neon shooter, using Vue, Three.js and Vite.
-No Nuxt, CMS, server, environment variables, or external account is required.
-The game runs entirely in the browser. All audio and fonts are local assets.
+Native C# Unity port of the game in the sibling `browser-neon-shooter` folder.
+The simulation, renderer, input, audio and HUD run in Unity. No browser,
+JavaScript runtime, web view, Node server or paid Asset Store package is needed.
 
-## Run locally
+## Open and play
 
-Use Node.js 24 LTS (Node 22.15+ is supported; the copied renderer tests use
-`node:module.registerHooks`). With nvm, run `nvm use` first.
+1. Install **Unity 6000.6.6f1** and activate a Unity license in Unity Hub.
+2. In Hub, choose **Add > Add project from disk**, and select this folder.
+   You can also launch the installed Editor directly with `-projectPath`.
+3. Open **Assets/Scenes/NeonShooter.unity** (or **Neon Shooter > Open Game Scene**).
+4. Press the Editor's **Play** button, then **Launch Flight** in the Game view.
 
-```sh
-cd /Users/mike.watts/Documents/Code/tmp/browser-neon-shooter
-npm ci
-npm run dev
-```
+The saved scene already contains the game component. Camera, procedural meshes,
+materials and audio sources are constructed at runtime. A bootstrap also permits
+playing from an empty scene. The project uses **Universal Render Pipeline 17.6.0**. Its renderer, pipeline
+and post-processing assets are included and assigned to every quality level.
+Legacy input is enabled in the project settings.
 
-Open the URL printed by Vite, normally http://127.0.0.1:5173.
-Dependencies have already been installed for this checkout, so you can start
-with `npm run dev`. Scroll to the launch button and click **Launch flight**,
-or keep scrolling to launch automatically. Reduced-motion users launch explicitly.
+The briefing, HUD, pause and game-over screens follow the browser game's
+purple/cyan palette, original fonts, lime controls and copy. The canyon, ship
+palettes, layered exhaust, radial sparks and staggered block explosion rings
+use the browser renderer as their reference. Native URP provides HDR bloom and
+ACES output in linear colour space.
 
-## Controls
+The menu plays the supplied **The Return of the 8 Bit Era** track, with a random
+**2–4 second silent gap** between repeats. Launching switches to gameplay music;
+returning to the briefing restarts the menu track. Sound Off mutes both players.
+Reduced Motion keeps effects gentler. Local native records remain separate from
+the browser's records.
 
 | Action | Control |
 | --- | --- |
-| Move | Mouse, arrow keys, O/P for left/right, W/S for up/down |
-| Fire | Hold Space or mouse button |
-| Missile | B |
-| Pause / resume | Escape or the on-screen button |
-| Sound | Sound on/off button |
-| Touch | Drag to move; automatic fire |
-| Leave game | Flight briefing button |
+| Move | Mouse, arrows, O/P, W/S; A/D also supported |
+| Fire | Hold Space or left mouse button |
+| Homing missile | B |
+| Pause / resume | Escape or Pause button |
+| Restart | Fly Again or Return after game over |
+| Launch from briefing | Launch Flight or Return |
+| Touch | Drag to move and auto-fire; on-screen missile button |
+| Audio | Sound On/Off |
 
-The game pauses when the window loses focus. Personal bests and the last ten
-battles use localStorage on the current origin. Existing scores from the Nuxt
-site do not automatically transfer to this app. No scores are uploaded.
+Losing application focus pauses flight. The briefing includes reduced-motion,
+personal bests and the last ten battles. Records use Unity PlayerPrefs and are
+separate from browser localStorage. Abandoning a started flight via **Flight
+Briefing** also records it. Sound and reduced-motion preferences persist locally.
+
+## Included gameplay and assets
+
+- Original block silhouettes and browser palettes for the hero, three enemy classes,
+  four fleet fighters, all twelve pickup icons, stars and bright red hearts.
+- Formation waves, occasional heavy ships, ten-point perfect-wave stars,
+  magnetic pickups, three lives, damage immunity and the crash sequence.
+- Twin guns, machine guns, twin lasers, mega laser, homing missiles,
+  shields, speed boost, orbital guards, wing orbs, spread shots, scatter bombs,
+  four-ship support fleet and six-vehicle assault fleet.
+- Civilians with hit penalties and safe-passage rewards; tanks, aimed turrets,
+  paired laser gates, capital ships with six independently destructible turrets,
+  and the following 100-ship invader formation.
+- Scrolling pink canyon shelves, contour maps, buildings, trees and roads.
+  The terrain shader is translated from the browser GLSL to Unity ShaderLab/HLSL.
+- Shared voxel meshes with GPU instancing, radial glows, HDR bloom, exhaust, debris and explosion rings.
+- All seven original MP3s copied byte-for-byte, including the music and voice
+  clips. Browser-generated effects are recreated as synthesized Unity AudioClips.
+- Three original TTF fonts imported; the original WOFF2 is preserved under
+  `docs/SourceAssets` because Unity's font importer uses the TTF assets here.
+
+This is a native recreation. Matched 1280×800 screenshots are saved under
+`TestResults/VisualParity`; see [visual comparison](docs/visual-parity.md).
+URP and WebGL use different rasterizers, bloom kernels and procedural noise
+precision, so the screenshots demonstrate visual style rather than bit-identical pixels.
+Generated sound envelopes, wrecks and some fine animation are approximations. The website's scroll-to-launch transition is replaced by a
+native briefing. Refer to [port mapping](docs/port-map.md) for implementation detail.
+
+## Add-on refinements
+
+All twelve pickup types are checked against the sibling browser catalogue. Rotating
+orbital guards leave a shrinking block ribbon and drifting particles, with shorter
+trails in Reduced Motion. Ground cars render at 80% of their former size and have
+individual speeds around 2.5 times their former pace. They steer gently around
+other vehicles, ground defences and the shader's procedural trees and roofs, then
+re-enter below the arena while assault support is active.
+
+The briefing and HUD use the Neon Shooter name. In the Editor, **Neon Shooter >
+Verify Add-ons** runs Edit Mode or Play Mode checks and saves XML under TestResults.
 
 ## Checks
 
-```sh
-npm test
-npm run test:coverage
-npm run test:e2e
-```
-
-All 27 original Node test files are copied unchanged into `src/tests`.
-The additional Playwright tests check desktop launch, wave progression,
-input, pause/resume, sound toggle, exit/relaunch, automatic scroll launch, and a touch viewport against
-the production build. They fail on desktop JavaScript/console or HTTP errors.
-
-Install Playwright's Chromium once before running the browser tests:
+Run the engine-independent checks using the .NET 8 SDK or newer:
 
 ```sh
-npx playwright install chromium
+cd /Users/mike.watts/Documents/Code/tmp/unity-neon-shooter
+dotnet run --project Tests/Headless/NeonShooter.Checks.csproj
 ```
 
-Browser screenshots are written to `test-results/` and ignored by Git.
-Coverage is reported by Node; the inherited suite primarily tests simulation,
-audio, persistence and renderer helpers, not every WebGL or Vue branch.
-
-## Build and preview
+This requires no NuGet packages: it runs 59 gameplay checks plus 66 reference
+scenarios derived from the browser's actual rules, canyon calculation and power
+catalog, plus a five-minute simulated-flight check (126 checks total).
+The gameplay, rendering, font/palette and menu-audio checks are exposed to
+Unity's Edit Mode Test Runner.
+To refresh the browser reference fixture after intentionally changing the source:
 
 ```sh
-npm run build
-npm run preview
+node Tools/browser-parity.mjs ../browser-neon-shooter
 ```
 
-Open the printed preview URL, normally http://127.0.0.1:4173.
-Publish the generated `dist/` directory with a static web server. There is no
-backend process. Use HTTP(S); opening `index.html` with a file URL will not run
-the source app. Vite uses a relative build base for hosting in a subdirectory.
-The Three.js bundle may produce Vite's large-chunk advisory; the renderer is
-loaded lazily when the launch area approaches the viewport.
+In Unity, choose **Window > General > Test Runner**, then **Run All** for EditMode
+and PlayMode. The PlayMode smoke test launches a flight, exercises all powerups
+and encounter renderers, checks shader support and seven audio imports, and
+verifies pause. It is a smoke test, not a full manual playthrough. It also captures an offscreen
+flight frame and checks for magenta shader errors and an empty render. A second Play Mode
+check compares rendered bloom on/off and measures the radial glow outside an
+emitter.
 
-A current browser with WebGL is needed. Browser audio starts after a user
-interaction. The game includes reduced-motion and touch controls.
+**Neon Shooter > Capture UI and Flight Previews** saves actual Game-view images
+of the briefing, flight and pause screen to `TestResults`. Run it outside Play Mode.
 
-## Deploy to Cloudflare
-
-The app is configured for **Cloudflare Workers Static Assets** using
-`wrangler.jsonc`. It serves the Vite `dist/` output without server-side game code.
-Wrangler is installed locally as a development dependency.
-
-From this project directory, build only:
+**Neon Shooter > Validate Project** checks shader compiler errors, audio imports
+and the scene component. To run the checks from the command line, close other
+Editor instances using this project first:
 
 ```sh
-npm run build:cloudflare
+UNITY_EDITOR=/Applications/Unity/Hub/Editor/6000.6.6f1/Unity.app/Contents/MacOS/Unity
+"$UNITY_EDITOR" -batchmode -quit -projectPath "$PWD" \
+  -executeMethod NeonShooter.Editor.ProjectTools.Validate -logFile Logs/validate.log
+"$UNITY_EDITOR" -batchmode -projectPath "$PWD" -runTests \
+  -testPlatform EditMode -testResults TestResults/editmode.xml -logFile Logs/editmode.log
+"$UNITY_EDITOR" -batchmode -projectPath "$PWD" -runTests \
+  -testPlatform PlayMode -testResults TestResults/playmode.xml -logFile Logs/playmode.log
 ```
 
-This creates `dist/` and does not upload anything. To preview the built game
-using Cloudflare's local runtime:
+The optional `Tools/CompileAgainstUnity.csproj` checks the production C# against
+an installed Editor's real assemblies without starting it. Its `UnityManaged`
+MSBuild property can be overridden for other installation locations. This check
+cannot validate native initialization, shader compilation, import or rendering.
 
-```sh
-npm run preview:cloudflare
-```
+See [verification notes](docs/verification.md) for the evidence available on this
+machine. No coverage percentage or complete gameplay/visual parity is claimed.
 
-Open the URL Wrangler prints, normally http://localhost:8787.
+## Build
 
-To publish, log in to your Cloudflare account once, then deploy:
+Choose **Neon Shooter > Build macOS** to create `Builds/macOS/Neon Shooter.app`.
+For Windows, Linux, mobile or Web, install the relevant Editor build support in
+Hub and use **File > Build Profiles** with the included scene. Those targets need
+separate device/build validation; touch support alone does not prove a mobile build.
 
-```sh
-npx wrangler login
-npm run deploy:cloudflare
-```
+## License and source
 
-The deploy script rebuilds first, then uploads to the Worker named
-`browser-neon-shooter`. Wrangler prints the deployed URL. If you have several
-Cloudflare accounts, select the intended account when prompted. Change `name`
-in `wrangler.jsonc` if you want a different Worker name. Re-running the deploy
-script updates that Worker.
+The source project's MIT license is retained in `LICENSE`. Copied audio and fonts
+retain their existing rights; their provenance and hashes are recorded in
+[asset-manifest.json](docs/asset-manifest.json). The source checkout does not
+provide separate redistribution licenses for those media files, so this port does
+not invent or relicense them.
 
-To validate the build and configuration without publishing:
-
-```sh
-npm run deploy:cloudflare -- --dry-run
-```
-
-For Cloudflare Workers Git integration, set the project root to this directory,
-use `npm run build:cloudflare` as the build command and `npx wrangler deploy` as
-the deploy command. Use Node.js 24. Cloudflare manages CI authentication.
-
-If you instead use **Cloudflare Pages** Git integration, the same static build
-works: set the build command to `npm run build:cloudflare` and the build output
-directory to `dist`. The deploy script above targets Workers.
-
-Local previews and dry runs do not verify your account permissions or a live
-deployment. Production publishing requires your Cloudflare account.
-
-The compatibility date is pinned to `2026-10-01` so it is supported by the
-installed local runtime. Wrangler 4.148.0 currently has three high-severity npm
-audit findings through its development-only Miniflare/sharp dependency chain.
-`npm audit fix` did not resolve them; the newer Wrangler release advertised by
-the CLI is excluded by this machine's npm release-date policy. The game's
-production dependencies are separate from these local deployment tools.
-
-References: [Workers static assets](https://developers.cloudflare.com/workers/static-assets/get-started/)
-and [asset configuration](https://developers.cloudflare.com/workers/static-assets/binding/).
-
-## Development
-
-See [architecture and extraction notes](docs/architecture.md) for the entry
-points, differences from the source project, and future multiplayer boundaries.
-Dependency versions are recorded in `package-lock.json`; use `npm ci` to
-reproduce the installed versions. Vite documentation: https://vite.dev/guide/.
-
-## License
-
-Project code is licensed under the [MIT License](LICENSE).
-Copyright (c) 2026 mj-watts (the configured Git author).
-Third-party libraries, fonts and audio retain their respective licenses and
-are not relicensed by this project's MIT license.
-
-## Extraction verification (2026-10-15)
-
-- 217 original tests passed across all 27 copied test files.
-- Production build passed; desktop, touch emulation and automatic scroll-launch
-  browser checks all passed (3 Playwright tests). Desktop and touch screenshots
-  were visually inspected.
-- Node coverage: 72.95% lines overall, 89.59% branches, 81.23% functions;
-  `ShooterGame.js` has 99.94% line coverage. WebGL initialization and rendering
-  account for most uncovered lines; browser checks separately exercise startup.
-- Production dependency audit: 0 vulnerabilities.
-- Copied game assets, original test files and feature CSS match the source
-  byte-for-byte. Source code hashes and the original Git working tree were
-  checked and unchanged.
-- Verified with Node 26.1.0, npm 11.13.0 and Playwright Chromium on macOS.
-  Touch testing used browser emulation, not a physical phone. Audio loading and
-  controls were checked; audible playback was not assessed by ear.
+Unity reference: [migrating to URP](https://docs.unity.com/en-us/engine/6000.6/manual/render-pipelines/universal-render-pipeline/introduction/installing-and-configuring-urp/upgrading-from-birp).

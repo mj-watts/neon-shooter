@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <Nullable>disable</Nullable><ImplicitUsings>disable</ImplicitUsings>
+    <NuGetAudit>false</NuGetAudit>
+    <UnityAssemblies Condition="'$(UnityAssemblies)'==''">../Library/ScriptAssemblies</UnityAssemblies>
+    <UnityManaged Condition="'$(UnityManaged)'==''">/Applications/Unity/Hub/Editor/6000.6.6f1/Unity.app/Contents/Resources/Scripting/Managed</UnityManaged>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../Assets/NeonShooter/Core/*.cs" />
+    <Compile Include="../Assets/NeonShooter/Runtime/*.cs" />
+    <Compile Include="../Assets/NeonShooter/Editor/*.cs" />
+    <Reference Include="$(UnityManaged)/UnityEngine/*.dll" />
+    <Reference Include="$(UnityAssemblies)/Unity*.dll" />
+  </ItemGroup>
+</Project>
