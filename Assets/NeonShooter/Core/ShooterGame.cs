@@ -138,14 +138,14 @@ namespace NeonShooter.Core
         {
             if(GroundEnemies.Count>=3) { GroundCooldown=2; return; }
             kind=kind??(++groundEncounter%3==0?"tank":"turret"); int side=random()<.5?-1:1;
-            GroundEnemies.Add(new Entity { Id=++serial,Kind=kind,Side=side,X=side*Width*.25,Y=Height/2+2,Hp=kind=="tank"?1:5,Cooldown=1.1 });
+            GroundEnemies.Add(new Entity { Id=++serial,Kind=kind,Side=side,X=GroundLane(side,Height/2+2,kind,0),Y=Height/2+2,Hp=kind=="tank"?1:5,Cooldown=1.1 });
             GroundCooldown=8+random()*5; Emit("groundIncoming");
         }
         public void SpawnLaserGate()
         {
             if(GroundEnemies.Any(e=>e.GateId!=0)) { GateCooldown=3; return; }
             int id=++serial;
-            for(int side=-1;side<=1;side+=2) GroundEnemies.Add(new Entity { Id=++serial,GateId=id,Kind="laserTurret",Side=side,X=side*Width*.35,Y=Height/2+2,Hp=5,Aim=-side*Math.PI/2 });
+            for(int side=-1;side<=1;side+=2) GroundEnemies.Add(new Entity { Id=++serial,GateId=id,Kind="laserTurret",Side=side,X=GroundLane(side,Height/2+2,"laserTurret",0),Y=Height/2+2,Hp=5,Aim=-side*Math.PI/2 });
             GateCooldown=20+random()*8; RefreshGates();
         }
         void RefreshGates()
@@ -207,13 +207,14 @@ namespace NeonShooter.Core
             var b=new Entity { Id=++serial,X=x,Y=y,Vx=vx,Vy=vy,Kind=kind,Life=life,Friendly=friendly,Damage=damage,Strength=damage };
             Bullets.Add(b); return b;
         }
+        bool VisibleMissileTarget(Entity e) { return !e.Destroyed && e.Age>=0 && Math.Abs(e.X)<=Width/2 && Math.Abs(e.Y)<=Height/2; }
         void Blast(Entity b,double radius,bool missile)
         {
             if(b.Exploded) return;
             b.Exploded=true; b.Life=-1; Emit(missile?"missileExplosion":"scatterExplosion",b,missile?3.4:1.7);
-            foreach(var e in Enemies.ToArray()) if(e.Age>=0 && Distance(e,b)<radius) DestroyEnemy(e,true);
-            foreach(var e in GroundEnemies.ToArray()) if(Math.Abs(e.Y)<=16 && Distance(e,b)<radius) DestroyGroundEnemy(e);
-            foreach(var e in CapitalTargets()) if(Math.Abs(e.Y)<=Height/2 && Distance(e,b)<radius) DamageCapital(e,e.Turrets[0].Hp);
+            foreach(var e in Enemies.ToArray()) if(e.Age>=0 && (!missile || VisibleMissileTarget(e)) && Distance(e,b)<radius) DestroyEnemy(e,true);
+            foreach(var e in GroundEnemies.ToArray()) if((missile?VisibleMissileTarget(e):Math.Abs(e.Y)<=16) && Distance(e,b)<radius) DestroyGroundEnemy(e);
+            foreach(var e in CapitalTargets()) if((!missile || VisibleMissileTarget(e)) && Math.Abs(e.Y)<=Height/2 && Distance(e,b)<radius) DamageCapital(e,e.Turrets[0].Hp);
             foreach(var shot in Bullets) if(!shot.Friendly && Distance(shot,b)<radius) shot.Life=-1;
             if(!missile)
             {
@@ -297,15 +298,21 @@ namespace NeonShooter.Core
                 if(assaultFire) Shot(s.X,s.Y+.8,Math.Sin(a)*36,Math.Cos(a)*36,"assault",Height/36+.2);
             }
         }
+        double GroundLane(int side,double y,string kind,double age)
+        {
+            // Centre installations on the top shelf, using the shader's near wall and parallax.
+            double edge=.79+CanyonTerrain.Wall(y+GroundTravel*CanyonTerrain.NearTravelRate,side*.7+4);
+            double lane=(edge+1)/2+(kind=="tank"?Math.Sin(age*.75)*.025:0);
+            return side*Width*.5*lane-CanyonTerrain.LateralOffset(Width,Player.X,3);
+        }
         void UpdateGround(double dt)
         {
             TurretLasers.Clear(); GroundCooldown-=dt; GateCooldown-=dt;
             if(GroundCooldown<=0) SpawnGroundEnemy(); if(GateCooldown<=0) SpawnLaserGate();
             foreach(var e in GroundEnemies.Concat(GroundWrecks).ToArray())
             {
-                e.Age+=dt; e.Y-=dt*SceneryVelocity*CanyonTerrain.DeepTravelRate;
-                double wall=CanyonTerrain.Wall(e.Y+GroundTravel*CanyonTerrain.DeepTravelRate,e.Side*.9),lane=e.Kind=="tank"?.5+Math.Sin(e.Age*.75)*.055:.49;
-                e.X=e.Side*Width*.5*(lane+wall)-CanyonTerrain.LateralOffset(Width,Player.X,1);
+                e.Age+=dt; e.Y-=dt*SceneryVelocity*CanyonTerrain.NearTravelRate;
+                e.X=GroundLane(e.Side,e.Y,e.Kind,e.Age);
                 if(e.Destroyed) continue;
                 if(e.GateId!=0)
                 {
@@ -399,21 +406,39 @@ namespace NeonShooter.Core
                 if(b.Life<=0) continue;
                 if(b.Kind=="missile")
                 {
-                    var target=Enemies.Concat(GroundEnemies).Concat(CapitalTargets()).Where(e=>e.Age>=0 && Math.Abs(e.Y)<17).OrderBy(e=>Distance(e,b)).FirstOrDefault();
-                    double orbit=Clock*1.4+b.Id*2.4,dx=(target?.X??Math.Cos(orbit)*7.5)-b.X,dy=(target?.Y??Math.Sin(orbit)*11)-b.Y;
-                    double length=Math.Max(.001,Math.Sqrt(dx*dx+dy*dy)),speed=target!=null?24:13,steer=Math.Min(1,dt*(target!=null?10:5));
-                    b.Vx+=(dx/length*speed-b.Vx)*steer; b.Vy+=(dy/length*speed-b.Vy)*steer;
+                    var target=Enemies.Concat(GroundEnemies).Concat(CapitalTargets()).Where(VisibleMissileTarget).OrderBy(e=>Distance(e,b)).FirstOrDefault();
+                    double vx,vy;
+                    if(target!=null)
+                    {
+                        double dx=target.X-b.X,dy=target.Y-b.Y,length=Math.Max(.001,Math.Sqrt(dx*dx+dy*dy));
+                        vx=dx/length*24; vy=dy/length*24;
+                    }
+                    else
+                    {
+                        // Tangential flight with a gentle radial correction makes a continuous
+                        // circle, rather than chasing a moving point and sticking to inner walls.
+                        double distance=Math.Sqrt(b.X*b.X+b.Y*b.Y),radius=Math.Min(Width,Height)*.3;
+                        double nx=distance>.001?b.X/distance:Math.Cos(b.Id*2.4),ny=distance>.001?b.Y/distance:Math.Sin(b.Id*2.4);
+                        double radial=Clamp((radius-distance)*3,-13,13);
+                        vx=-ny*13+nx*radial; vy=nx*13+ny*radial;
+                    }
+                    double steer=Math.Min(1,dt*(target!=null?10:5));
+                    b.Vx+=(vx-b.Vx)*steer; b.Vy+=(vy-b.Vy)*steer;
                 }
                 b.X+=b.Vx*dt; b.Y+=b.Vy*dt; b.Life-=dt;
-                if(b.Kind=="missile") { double limit=Math.Max(11,Width*.32); b.X=Clamp(b.X,-limit,limit); limit=Math.Max(15,Height/2-1); b.Y=Clamp(b.Y,-limit,limit); }
+                if(b.Kind=="missile")
+                {
+                    double xLimit=Math.Max(.5,Width/2-.5),yLimit=Math.Max(.5,Height/2-.5);
+                    b.X=Clamp(b.X,-xLimit,xLimit); b.Y=Clamp(b.Y,-yLimit,yLimit);
+                }
                 if(b.Kind=="bomb") { b.Fuse-=dt; if(b.Fuse<=0) { Blast(b,2.2,false); continue; } }
                 if(b.Friendly)
                 {
                     var c=Civilians.Find(e=>Math.Abs(e.Y)<=16 && Distance(e,b)<.85);
                     if(c!=null && b.Kind!="missile") { b.Life=-1; if(b.Kind=="bomb") Blast(b,2.2,false); else HitCivilian(c); continue; }
-                    var target=CapitalTargets().FirstOrDefault(e=>Math.Abs(e.Y)<=Height/2 && Distance(e,b)<.85);
-                    if(target==null) target=GroundEnemies.Find(e=>Math.Abs(e.Y)<=16 && Distance(e,b)<.85);
-                    if(target==null) target=Enemies.Find(e=>e.Age>=0 && Distance(e,b)<(e.Invader?.15+.6*e.Scale:e.Heavy?.85:.6));
+                    var target=CapitalTargets().FirstOrDefault(e=>(b.Kind!="missile" || VisibleMissileTarget(e)) && Math.Abs(e.Y)<=Height/2 && Distance(e,b)<.85);
+                    if(target==null) target=GroundEnemies.Find(e=>(b.Kind=="missile"?VisibleMissileTarget(e):Math.Abs(e.Y)<=16) && Distance(e,b)<.85);
+                    if(target==null) target=Enemies.Find(e=>e.Age>=0 && (b.Kind!="missile" || VisibleMissileTarget(e)) && Distance(e,b)<(e.Invader?.15+.6*e.Scale:e.Heavy?.85:.6));
                     if(target==null) continue;
                     if(b.Kind=="missile" || b.Kind=="bomb") Blast(b,b.Kind=="missile"?4.8:2.2,b.Kind=="missile");
                     else
@@ -515,7 +540,7 @@ namespace NeonShooter.Core
             UpdateSupportContacts(); UpdateLasers(dt); UpdateBullets(dt); if(Lives<=0) return;
             foreach(var b in GateLasers)
             {
-                double before=previousY-(b.Y+dt*SceneryVelocity*CanyonTerrain.DeepTravelRate),after=Player.Y-b.Y,clearance=b.Width/2+.45;
+                double before=previousY-(b.Y+dt*SceneryVelocity*CanyonTerrain.NearTravelRate),after=Player.Y-b.Y,clearance=b.Width/2+.45;
                 if(Math.Abs(after)>=clearance && before*after>0) continue;
                 Player.Y=b.Y+(before>0?1:-1)*clearance; DamagePlayer(true);
             }

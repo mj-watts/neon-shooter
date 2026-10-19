@@ -126,7 +126,20 @@ namespace NeonShooter.Unity
             }
             else if(!launched) { visualTime+=dt; Model.GroundTravel+=dt; }
             shake=Mathf.Max(0,shake-dt*3);
-            gameCamera.transform.position=new Vector3(Model.Paused?0:Mathf.Sin(visualTime*71)*shake,Model.Paused?0:Mathf.Cos(visualTime*83)*shake,-40);
+            float capitalRumble=0;
+            if(launched && !Model.Paused)
+            {
+                foreach(var ship in Model.CapitalShips)
+                {
+                    // The hull extends twelve units above and below its centre.
+                    // Fade the rumble over the first/last four visible units.
+                    float visibleDepth=(float)(Model.Height*.5+12-Math.Abs(ship.Y));
+                    capitalRumble=Mathf.Max(capitalRumble,.14f*Mathf.Clamp01(visibleDepth/4));
+                }
+            }
+            float cameraX=Mathf.Sin(visualTime*71)*shake+Mathf.Sin(visualTime*27)*capitalRumble;
+            float cameraY=Mathf.Cos(visualTime*83)*shake+Mathf.Cos(visualTime*33)*capitalRumble;
+            gameCamera.transform.position=new Vector3(Model.Paused?0:cameraX,Model.Paused?0:cameraY,-40);
         }
         void Handle(GameEvent e)
         {
@@ -254,7 +267,7 @@ namespace NeonShooter.Unity
                 Draw(civilian?"civilian":e.Heavy?"heavy":"enemy"+e.Variant,e,(civilian?1:.52f)*(1-progress*.65f),progress*22,progress*360*e.Side);
                 assets.Glow("orange",Position(e,progress*22-.1f),Vector3.one*(1-progress)*2,gameCamera,.6f);
             }
-            foreach(var s in Model.Fleet) Draw("fleet"+s.Side,s,.341f,0,(float)s.Bank*Mathf.Rad2Deg);
+            foreach(var s in Model.Fleet) Draw("fleet"+s.Side,s,.39215f,0,(float)s.Bank*Mathf.Rad2Deg);
             foreach(var p in Model.Pickups)
             {
                 string color=p.Kind=="life"?"red":p.Kind=="powerup"?PowerCatalog.Find(p.Power).Color:"gold";
@@ -263,12 +276,17 @@ namespace NeonShooter.Unity
             }
             foreach(var b in Model.Bullets)
             {
+                if(b.Kind=="missile")
+                {
+                    assets.DrawMissile(Position(b,-1),new Vector2((float)b.Vx,(float)b.Vy),visualTime,gameCamera);
+                    continue;
+                }
                 float angle=-Mathf.Atan2((float)b.Vx,(float)b.Vy)*Mathf.Rad2Deg;
-                string key=b.Kind=="missile"?"missile":b.Kind=="bomb"?"blockorange":!b.Friendly?"blockpink":b.Kind=="companion" || b.Kind=="fleet"?"blockcyan":b.Kind=="shrapnel" || b.Kind=="assault"?"blockorange":"shot"+(int)b.Strength;
-                float scale=b.Kind=="missile"?1:b.Kind=="bomb"?.44f:!b.Friendly?.22f:key.StartsWith("block",StringComparison.Ordinal)?.15f:1;
+                string key=b.Kind=="bomb"?"blockorange":!b.Friendly?"blockpink":b.Kind=="companion" || b.Kind=="fleet"?"blockcyan":b.Kind=="shrapnel" || b.Kind=="assault"?"blockorange":"shot"+(int)b.Strength;
+                float scale=b.Kind=="bomb"?.44f:!b.Friendly?.22f:key.StartsWith("block",StringComparison.Ordinal)?.15f:1;
                 Draw(key,b,scale,-1,angle);
-                string color=b.Kind=="missile" || b.Kind=="bomb"?"orange":b.Friendly?"cyan":"pink";
-                assets.Glow(color,Position(b,-.5f),new Vector3(1.6f,b.Kind=="missile"?2.8f:1.6f,1),gameCamera,.65f);
+                string color=b.Kind=="bomb"?"orange":b.Friendly?"cyan":"pink";
+                assets.Glow(color,Position(b,-.5f),new Vector3(1.6f,1.6f,1),gameCamera,.65f);
             }
             foreach(var b in Model.Lasers) DrawBeam(b); foreach(var b in Model.GateLasers) DrawBeam(b); foreach(var b in Model.TurretLasers) DrawBeam(b);
             foreach(var point in orbitalTrails.Points)

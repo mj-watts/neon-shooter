@@ -63,6 +63,41 @@ namespace NeonShooter.Tests
             test("repeated weapons stack to strength three", () => { var g = Game(); for(int i=0;i<5;i++) g.CollectPowerup("laser"); Equal(3, g.WeaponStrength); });
             test("weapon switch resets strength", () => { var g = Game(); g.CollectPowerup("mega"); g.CollectPowerup("laser"); Equal(1, g.WeaponStrength); });
             test("expired weapon returns to guns", () => { var g = Game(); g.CollectPowerup("machine"); g.WeaponTime = .005; g.Update(.01, new FlightInput()); Equal("guns", g.Weapon); Equal(1, g.WeaponStrength); });
+            test("idle missiles circle continuously inside the visible screen", () => {
+                var g=Game(); g.Enemies.Clear(); g.Phase="intermission"; g.Elapsed=-100;
+                g.Update(.001,new FlightInput { Missile=true }); var rocket=g.Bullets.Single();
+                Advance(g,4); double min=100,max=0,turn=0;
+                double previous=Math.Atan2(rocket.Y,rocket.X);
+                for(int frame=0;frame<960;frame++) {
+                    g.Update(1.0/120,new FlightInput());
+                    True(g.Bullets.Contains(rocket)); True(Math.Abs(rocket.X)<g.Width/2); True(Math.Abs(rocket.Y)<g.Height/2);
+                    double radius=Math.Sqrt(rocket.X*rocket.X+rocket.Y*rocket.Y); min=Math.Min(min,radius); max=Math.Max(max,radius);
+                    double angle=Math.Atan2(rocket.Y,rocket.X); turn+=Math.Atan2(Math.Sin(angle-previous),Math.Cos(angle-previous)); previous=angle;
+                }
+                True(max-min<.5); True(Math.Abs(turn)>Math.PI*2);
+            });
+            test("missiles reach turrets on both outer scenery shelves", () => {
+                foreach(double width in new[]{24.0,51.2}) foreach(int side in new[]{-1,1}) {
+                    var g=Game(); g.SetPlayfield(width,32); g.Enemies.Clear(); g.Phase="intermission"; g.Elapsed=-100; g.ScenerySpeed=0;
+                    g.SpawnGroundEnemy("turret"); var turret=g.GroundEnemies.Single(); turret.Side=side; turret.Y=0; turret.Cooldown=999;
+                    g.Update(.001,new FlightInput { Missile=true });
+                    Advance(g,4); True(!g.GroundEnemies.Contains(turret));
+                }
+            });
+            test("missiles wait for a visible enemy then acquire it", () => {
+                var g=Game(); g.SetPlayfield(24,20); g.Enemies.Clear(); g.Phase="intermission"; g.Elapsed=-100; g.ScenerySpeed=0;
+                g.SpawnGroundEnemy("turret"); var turret=g.GroundEnemies.Single(); turret.Y=11; turret.Cooldown=999;
+                g.Update(.001,new FlightInput { Missile=true }); var rocket=g.Bullets.Single();
+                Advance(g,3); True(g.GroundEnemies.Contains(turret)); True(Math.Abs(rocket.Y)<g.Height/2);
+                turret.Y=0; Advance(g,4); True(!g.GroundEnemies.Contains(turret));
+            });
+            test("missiles hit visible ground targets above the old fixed height", () => {
+                var g=Game(); g.SetPlayfield(51.2,48); g.Enemies.Clear(); g.Phase="intermission"; g.Elapsed=-100; g.ScenerySpeed=0;
+                g.SpawnGroundEnemy("turret"); var turret=g.GroundEnemies.Single(); turret.Y=20; turret.Cooldown=999;
+                g.Update(.001,new FlightInput());
+                g.Bullets.Add(new Entity { Kind="missile",Friendly=true,X=turret.X,Y=19.5,Vy=18,Life=double.PositiveInfinity });
+                Advance(g,.2); True(!g.GroundEnemies.Contains(turret));
+            });
             test("missiles are capped at ten", () => { var g = Game(); for(int i=0;i<20;i++) g.CollectPowerup("missile"); Equal(10, g.MissileCount); });
             test("invalid pickup ignored", () => { var g = Game(); g.CollectPowerup("unknown"); Equal("guns", g.Weapon); });
             test("shield prevents regular damage", () => { var g = Game(); g.CollectPowerup("shield"); g.DamagePlayer(); Equal(3, g.Lives); });
@@ -97,16 +132,34 @@ namespace NeonShooter.Tests
             test("reset clears score and restores stock", () => { var g = Game(); g.Score=500; g.CollectPowerup("fleet"); g.Reset(); Equal(0,g.Score); Equal(0,g.Fleet.Count); Equal(3,g.Lives); });
             test("simulation accumulator caps frame delta", () => { var a=Game(); var b=Game(); a.Advance(5,new FlightInput { Right=true }); b.Advance(.1,new FlightInput { Right=true }); Near(a.Player.X,b.Player.X); });
             test("simulation is consistent at 30 and 60 fps", () => { var a=Game(); var b=Game(); for(int i=0;i<30;i++) a.Advance(1.0/30,new FlightInput { Right=true }); for(int i=0;i<60;i++) b.Advance(1.0/60,new FlightInput { Right=true }); Near(a.Player.X,b.Player.X); Near(a.Clock,b.Clock); });
-            test("turrets and tanks follow the canyon lateral shift", () => {
+            test("tanks and every ground turret spawn and remain on the top scenery shelf", () => {
+                foreach(int side in new[]{-1,1})
+                {
+                    var g=new ShooterGame(()=>side<0?.25:.75); g.StartWave();
+                    g.GroundCooldown=g.GateCooldown=g.CapitalCooldown=g.CivilianCooldown=9999; g.Player.Invulnerable=100;
+                    g.SpawnGroundEnemy("tank"); g.SpawnGroundEnemy("turret"); g.SpawnLaserGate();
+                    foreach(double seconds in new[]{0.0,.5,2.0})
+                    {
+                        Advance(g,seconds);
+                        foreach(var e in g.GroundEnemies)
+                        {
+                            double x=e.Side*(e.X+CanyonTerrain.LateralOffset(g.Width,g.Player.X,3))/(g.Width*.5);
+                            double edge=.79+CanyonTerrain.Wall(e.Y+g.GroundTravel*CanyonTerrain.NearTravelRate,e.Side*.7+4);
+                            True(x>edge && x<1);
+                        }
+                    }
+                }
+            });
+            test("turrets and tanks follow the top canyon shelf lateral shift", () => {
                 var g=Game(); g.SpawnGroundEnemy("turret"); g.SpawnGroundEnemy("tank"); g.Player.Invulnerable=100;
                 g.Update(.001,new FlightInput()); var before=g.GroundEnemies.Select(e=>e.X).ToArray();
                 g.Player.X=6; g.Update(.001,new FlightInput());
-                for(int i=0;i<before.Length;i++) Near(-g.Width*6*.003,g.GroundEnemies[i].X-before[i],.01);
+                for(int i=0;i<before.Length;i++) Near(-g.Width*6*.0125,g.GroundEnemies[i].X-before[i],.01);
             });
             test("fixed ground installations remain on the same scrolling surface", () => {
                 var g=Game(); g.SpawnGroundEnemy("turret"); g.Player.Invulnerable=100;
-                g.Update(.001,new FlightInput()); var turret=g.GroundEnemies[0]; double surface=turret.Y+g.GroundTravel*.36;
-                Advance(g,.5); Near(surface,turret.Y+g.GroundTravel*.36);
+                g.Update(.001,new FlightInput()); var turret=g.GroundEnemies[0]; double surface=turret.Y+g.GroundTravel*CanyonTerrain.NearTravelRate;
+                Advance(g,.5); Near(surface,turret.Y+g.GroundTravel*CanyonTerrain.NearTravelRate);
             });
             test("assault vehicles follow the nearest canyon shelf lateral shift", () => {
                 var g=Game(); g.CollectPowerup("assault"); g.Update(.001,new FlightInput()); var before=g.AssaultFleet.Select(e=>e.X).ToArray();
@@ -116,9 +169,9 @@ namespace NeonShooter.Tests
             test("laser gates and wrecks share the installation lateral shift", () => {
                 var g=Game(); g.Player.Invulnerable=100; g.SpawnLaserGate(); g.Update(.001,new FlightInput());
                 double beamX=g.GateLasers[0].X; var left=g.GroundEnemies[0];
-                g.Player.X=6; g.Update(.001,new FlightInput()); Near(-g.Width*6*.003,g.GateLasers[0].X-beamX,.01);
+                g.Player.X=6; g.Update(.001,new FlightInput()); Near(-g.Width*6*.0125,g.GateLasers[0].X-beamX,.01);
                 g.DestroyGroundEnemy(left); double wreckX=left.X;
-                g.Player.X=-4; g.Update(.001,new FlightInput()); Near(g.Width*10*.003,left.X-wreckX,.01);
+                g.Player.X=-4; g.Update(.001,new FlightInput()); Near(g.Width*10*.0125,left.X-wreckX,.01);
             });
             test("all twelve supply types are reachable", () => { var powers=Enumerable.Range(0,10000).Select(i=>PowerCatalog.Supply(i/10000.0)).Distinct().Count(); Equal(12,powers); });
         }

@@ -83,7 +83,15 @@ namespace NeonShooter.Unity
             Begin(); Box(0,0,0,.24f,.42f,.09f,ColorOf("violet")*2); Box(0,0,-.08f,.08f,.34f,.03f,Color.white*2); End("shot3");
             foreach(string color in new[]{"cyan","mint","pink","orange","gold","red","violet","#090909","#70505a"}) { Begin(); Box(0,0,0,1,1,1,ColorOf(color)*1.8f); End("block"+color); }
             foreach(string color in new[]{"blue","cyan","mint","pink","orange","gold","red","violet"}) { Begin(); Box(0,0,0,.9f,.9f,.03f,ColorOf(color)*3); End("ring"+color); }
-            Begin(); Pixels(new[]{"..X..",".XXX.",".XXX.",".XXX.","XXXXX","X.X.X","..X.."},.09f,Palette("orange"),2); End("missile");
+            // A stepped nose, pale fuselage, dark collar and swept block fins.
+            // Keep every channel below the flight bloom threshold: these are matte blocks.
+            Begin(); Pixels(new[]{"...N...","..NNN..","..WWW..","..WLW..","..WWW..","..WLW..","..WWW..","..DDD..",".FWWWF.","FFWWWFF","FFDDDFF","F..D..F","...D..."},.075f,
+                new Dictionary<char,string>{{'N',"#ce6845"},{'W',"#b9c6d0"},{'L',"#e1e5e8"},{'D',"#384656"},{'F',"#488ca5"}}); End("missile");
+            Begin();
+            Box(0,-.045f,0,.12f,.09f,.065f,ColorOf("#d9d79b"));
+            Box(0,-.14f,0,.085f,.085f,.06f,ColorOf("#d28b4a"));
+            Box(0,-.225f,0,.055f,.06f,.05f,ColorOf("#a55638"));
+            End("missileThrust");
             Begin(); Pixels(new[]{"..WWWWW..",".WCCCCCW.","WWCCCCCWW","GWCCCCCWG","GGWWWWWGG","YGGWWWGGY",".GGGWGGG.","..GGWGG..","...W.W..."},.2f,new Dictionary<char,string>{{'W',"#b3dacd"},{'G',"#44d99d"},{'C',"#153846"},{'Y',"#ffc954"}});
             Box(0,.36f,-.16f,.3f,.29f,.08f,ColorOf("#ffd69d")); Box(0,.52f,-.18f,.34f,.08f,.04f,ColorOf("mint"));
             for(int s=-1;s<=1;s+=2) Box(s*.065f,.4f,-.22f,.035f,.04f,.02f,ColorOf("#2a111c"));
@@ -140,6 +148,15 @@ namespace NeonShooter.Unity
             string key=(block?"block":spark?"spark":"halo")+color+alpha;
             Material m; if(!glows.TryGetValue(key,out m)) { m=new Material(Resources.Load<Shader>(block?"Shaders/ExplosionBlock":spark?"Shaders/Spark":"Shaders/Glow")); m.enableInstancing=true; Color c=ColorOf(color)*(spark?2:3); c.a=alpha; m.SetColor("_Color",c); glows.Add(key,m); }
             Queue("glow"+key,Quad,m,Matrix4x4.TRS(position,Quaternion.Euler(0,0,angle),scale));
+        }
+        public void DrawMissile(Vector3 position,Vector2 velocity,float time,Camera camera)
+        {
+            float angle=velocity.sqrMagnitude>0?-Mathf.Atan2(velocity.x,velocity.y)*Mathf.Rad2Deg:0;
+            var rotation=Quaternion.Euler(0,0,angle);
+            Draw("missile",position,Vector3.one,angle,camera);
+            // Short, stepped thrust follows the same heading, anchored to the nozzle.
+            float pulse=.85f+.3f*Mathf.PingPong(time*18+position.x*.37f,1);
+            Draw("missileThrust",position+rotation*Vector3.down*.51f,new Vector3(1,pulse,1),angle,camera);
         }
         public void DrawExhaust(Vector3 position,float boost,float time,float angle,Camera camera)
         {
