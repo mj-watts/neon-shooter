@@ -14,7 +14,7 @@ namespace NeonShooter.Core
         }
         public readonly List<Point> Points=new List<Point>();
         double accumulator;
-        public void Update(IEnumerable<Entity> orbs,Entity hero,double dt,bool reducedMotion)
+        public void Update(IEnumerable<Entity> orbs,Entity hero,double dt)
         {
             if(dt<=0) return;
             for(int i=Points.Count-1;i>=0;i--)
@@ -22,7 +22,7 @@ namespace NeonShooter.Core
                 var p=Points[i]; p.Age+=dt; p.X+=p.Vx*dt; p.Y+=p.Vy*dt;
                 if(p.Age>=p.Life) Points.RemoveAt(i);
             }
-            double interval=reducedMotion?1.0/30:1.0/90;
+            double interval=1.0/90;
             accumulator+=dt;
             while(accumulator>=interval)
             {
@@ -33,8 +33,8 @@ namespace NeonShooter.Core
                     // Step back around the orbit for sub-frame samples at lower frame rates.
                     double angle=-accumulator*7,c=Math.Cos(angle),s=Math.Sin(angle);
                     double px=x*c-y*s,py=x*s+y*c;
-                    Points.Add(new Point { X=px,Y=py,Age=accumulator,Life=reducedMotion?.12:.35 });
-                    Points.Add(new Point { X=px,Y=py,Age=accumulator,Life=reducedMotion?.18:.48,
+                    Points.Add(new Point { X=px,Y=py,Age=accumulator,Life=.35 });
+                    Points.Add(new Point { X=px,Y=py,Age=accumulator,Life=.48,
                         Vx=px*.3-py*.12,Vy=py*.3+px*.12,Particle=true });
                 }
             }

@@ -44,7 +44,6 @@ namespace NeonShooter.Tests
             root.Launch(); root.enabled=false;
             var flags=System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic;
             var type=typeof(NeonGame);
-            type.GetField("reducedMotion",flags).SetValue(root,false);
             root.SendMessage("Handle",new NeonShooter.Core.GameEvent { Type="explosion",X=0,Y=0,Size=1.5,Color="cyan" });
             var rings=(System.Collections.IList)type.GetField("rings",flags).GetValue(root);
             Assert.That(rings.Count,Is.GreaterThanOrEqualTo(3),"Fireworks need staggered spark shells");
@@ -68,7 +67,7 @@ namespace NeonShooter.Tests
             yield return null;
             root.enabled=false;
             var camera=root.GetComponentInChildren<Camera>();
-            var controller=camera.GetComponent<NeonBloom>(); controller.ReducedMotion=false; controller.MusicPulse=controller.BlastPulse=0;
+            var controller=camera.GetComponent<NeonBloom>(); controller.MusicPulse=controller.BlastPulse=0;
             camera.orthographicSize=16; camera.backgroundColor=Color.black;
             var target=new RenderTexture(1280,800,24,RenderTextureFormat.ARGBHalf); camera.targetTexture=target;
             var assets=new VoxelAssets();

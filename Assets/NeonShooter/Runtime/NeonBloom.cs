@@ -7,8 +7,7 @@ namespace NeonShooter.Unity
     [RequireComponent(typeof(Camera))]
     public sealed class NeonBloom : MonoBehaviour
     {
-        public const float StandardIntensity=4.5f, ReducedIntensity=3.2f, Threshold=.65f, Scatter=.88f;
-        public bool ReducedMotion;
+        public const float StandardIntensity=4.5f, Threshold=.65f, Scatter=.88f;
         public float MusicPulse;
         public float BlastPulse;
         Volume volume;
@@ -36,9 +35,8 @@ namespace NeonShooter.Unity
         }
         void Update()
         {
-            if(bloom!=null) bloom.intensity.Override(ReducedMotion?ReducedIntensity:StandardIntensity*(1+Mathf.Clamp01(MusicPulse)*.45f+Mathf.Clamp01(BlastPulse)*.6f));
-            if(!ReducedMotion) BlastPulse*=Mathf.Exp(-Time.unscaledDeltaTime*7);
-            else BlastPulse=0;
+            if(bloom!=null) bloom.intensity.Override(StandardIntensity*(1+Mathf.Clamp01(MusicPulse)*.45f+Mathf.Clamp01(BlastPulse)*.6f));
+            BlastPulse*=Mathf.Exp(-Time.unscaledDeltaTime*7);
         }
         void OnDisable()
         {

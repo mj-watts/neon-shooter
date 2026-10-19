@@ -13,11 +13,11 @@ namespace NeonShooter.Unity
         VoxelAssets assets;
         FlightAudio audioPlayer;
         MenuSoundtrack menuMusic;
-        float MenuPulse => !launched && !reducedMotion && menuMusic!=null?menuMusic.Pulse:0;
+        float MenuPulse => !launched && menuMusic!=null?menuMusic.Pulse:0;
         Color MenuAccent => Color.Lerp(VoxelAssets.ColorOf("#ff3ba7"),VoxelAssets.ColorOf("#ffe85a"),MenuPulse);
         NeonBloom bloom;
         RunHistory history;
-        bool launched,historyVisible,reducedMotion,pointerActive,saved;
+        bool launched,historyVisible,pointerActive,saved;
         Vector3 lastPointer;
         int lastWidth,lastHeight,lastCountdown;
         float calloutUntil,shake,visualTime;
@@ -43,7 +43,7 @@ namespace NeonShooter.Unity
         void Awake()
         {
             Application.targetFrameRate=120; QualitySettings.vSyncCount=1;
-            history=new RunHistory(); reducedMotion=PlayerPrefs.GetInt("neon-shooter.reduced-motion",0)==1;
+            history=new RunHistory();
             assets=new VoxelAssets(); Model=new ShooterGame(); Model.OnEvent+=Handle;
             gameCamera=Camera.main;
             if(gameCamera==null) gameCamera=new GameObject("Flight Camera").AddComponent<Camera>();
@@ -53,7 +53,7 @@ namespace NeonShooter.Unity
             gameCamera.transform.position=new Vector3(0,0,-40); gameCamera.backgroundColor=VoxelAssets.ColorOf("#080318"); gameCamera.clearFlags=CameraClearFlags.SolidColor;
             gameCamera.allowHDR=true; gameCamera.allowMSAA=false;
             if(cameraObject.GetComponent<AudioListener>()==null) cameraObject.AddComponent<AudioListener>();
-            bloom=cameraObject.AddComponent<NeonBloom>(); bloom.ReducedMotion=reducedMotion;
+            bloom=cameraObject.AddComponent<NeonBloom>();
             audioPlayer=gameObject.AddComponent<FlightAudio>(); audioPlayer.SetMuted(PlayerPrefs.GetInt("neon-shooter.muted",0)==1);
             menuMusic=gameObject.AddComponent<MenuSoundtrack>(); menuMusic.SetMuted(audioPlayer.Muted); menuMusic.Begin();
             displayFont=Resources.Load<Font>("Fonts/OffBit101"); bodyFont=Resources.Load<Font>("Fonts/nohemi"); Resize();
@@ -73,7 +73,7 @@ namespace NeonShooter.Unity
         public void Launch()
         {
             menuMusic.Stop(); bloom.MusicPulse=0;
-            Model.Reset(); Model.ScenerySpeed=reducedMotion?.072:3.6; Resize(); launched=true; saved=false; historyVisible=false;
+            Model.Reset(); Model.ScenerySpeed=3.6; Resize(); launched=true; saved=false; historyVisible=false;
             particles.Clear(); rings.Clear(); blasts.Clear(); orbitalTrails.Clear(); bloom.BlastPulse=0; lastCountdown=0; pointerActive=false; audioPlayer.Begin();
         }
         void Leave()
@@ -124,9 +124,9 @@ namespace NeonShooter.Unity
                 if(Model.Lasers.Count>0) audioPlayer.Handle(new GameEvent { Type="laser" });
                 visualTime+=dt; UpdateEffects(dt);
             }
-            else if(!launched) { visualTime+=dt; Model.GroundTravel+=dt*(reducedMotion?.03:1); }
+            else if(!launched) { visualTime+=dt; Model.GroundTravel+=dt; }
             shake=Mathf.Max(0,shake-dt*3);
-            gameCamera.transform.position=new Vector3(reducedMotion || Model.Paused?0:Mathf.Sin(visualTime*71)*shake,reducedMotion || Model.Paused?0:Mathf.Cos(visualTime*83)*shake,-40);
+            gameCamera.transform.position=new Vector3(Model.Paused?0:Mathf.Sin(visualTime*71)*shake,Model.Paused?0:Mathf.Cos(visualTime*83)*shake,-40);
         }
         void Handle(GameEvent e)
         {
@@ -146,13 +146,13 @@ namespace NeonShooter.Unity
             }
             if(e.Type=="explosion" || e.Type.EndsWith("Explosion",StringComparison.Ordinal) || e.Type=="hit" || e.Type=="playerCrash")
             {
-                if(!reducedMotion) shake=Mathf.Min(.3f,(float)e.Size*.06f);
+                shake=Mathf.Min(.3f,(float)e.Size*.06f);
                 float size=Mathf.Clamp((float)e.Size,.4f,5.5f);
-                Burst(e,Mathf.FloorToInt(size*(reducedMotion?24:e.Type=="gateExplosion"?60:100)),true);
+                Burst(e,Mathf.FloorToInt(size*(e.Type=="gateExplosion"?60:100)),true);
                 var at=new Vector3((float)e.X,(float)e.Y,-2);
                 if(blasts.Count>=MaxBlasts) blasts.RemoveAt(0);
                 blasts.Add(new Blast { Position=at,Size=size,Life=1.05f,MaxLife=1.05f,Color=e.Color??"pink" });
-                int layers=reducedMotion?2:4;
+                const int layers=4;
                 for(int i=0;i<layers;i++)
                 {
                     if(rings.Count>=MaxRings) rings.RemoveAt(0);
@@ -161,9 +161,9 @@ namespace NeonShooter.Unity
                     for(int j=0;j<48;j++) { drift[j]=UnityEngine.Random.Range(.1f,.4f); fadeAt[j]=UnityEngine.Random.Range(.6f,1); }
                     rings.Add(new Ring { Position=at,Size=size*(2.8f+i*.8f),Life=life,MaxLife=life,Delay=i*.13f,Color=i==1?"gold":i==3?"cyan":e.Color??"pink",Drift=drift,FadeAt=fadeAt });
                 }
-                if(!reducedMotion) bloom.BlastPulse=Mathf.Min(.65f,bloom.BlastPulse+size*.12f);
+                bloom.BlastPulse=Mathf.Min(.65f,bloom.BlastPulse+size*.12f);
             }
-            else if(e.Type=="impact" || e.Type=="collect" || e.Type=="powerup") Burst(e,reducedMotion?2:8);
+            else if(e.Type=="impact" || e.Type=="collect" || e.Type=="powerup") Burst(e,8);
         }
         void Callout(string text,float duration) { callout=text; calloutUntil=Time.unscaledTime+duration; }
         void Burst(GameEvent e,int count,bool fireworks=false)
@@ -175,7 +175,6 @@ namespace NeonShooter.Unity
                 var direction=new Vector3(Mathf.Cos(angle),Mathf.Sin(angle),0);
                 float life=fireworks?UnityEngine.Random.Range(1.2f,2.7f):UnityEngine.Random.Range(.25f,.6f);
                 float speed=Mathf.Max(.3f,(float)e.Size)*UnityEngine.Random.Range(1f,8f);
-                if(reducedMotion) { speed*=.4f; life*=.7f; }
                 particles.Add(new Particle {
                     Position=new Vector3((float)e.X,(float)e.Y,-2.2f),Velocity=direction*speed,
                     Life=life,MaxLife=life,Size=UnityEngine.Random.Range(.12f,.34f),
@@ -186,12 +185,12 @@ namespace NeonShooter.Unity
         }
         void UpdateEffects(float dt)
         {
-            orbitalTrails.Update(Model.Orbs,Model.Player,dt,reducedMotion);
+            orbitalTrails.Update(Model.Orbs,Model.Player,dt);
             for(int i=particles.Count-1;i>=0;i--)
             {
                 var p=particles[i]; p.Life-=dt; p.Position+=p.Velocity*dt;
                 p.Velocity*=Mathf.Exp(-dt*.65f);
-                p.Velocity+=Vector3.down*(dt*(reducedMotion?.15f:1.15f));
+                p.Velocity+=Vector3.down*(dt*1.15f);
                 if(p.Life<=0) particles.RemoveAt(i); else particles[i]=p;
             }
             for(int i=rings.Count-1;i>=0;i--)
@@ -259,7 +258,7 @@ namespace NeonShooter.Unity
             foreach(var p in Model.Pickups)
             {
                 string color=p.Kind=="life"?"red":p.Kind=="powerup"?PowerCatalog.Find(p.Power).Color:"gold";
-                Draw(p.Kind=="life"?"life":p.Kind=="powerup"?"power"+p.Power:"star",p,p.Value==10?1.8f:1,-.5f,reducedMotion?0:Mathf.Sin((float)p.Age*2)*12);
+                Draw(p.Kind=="life"?"life":p.Kind=="powerup"?"power"+p.Power:"star",p,p.Value==10?1.8f:1,-.5f,Mathf.Sin((float)p.Age*2)*12);
                 assets.Glow(color,Position(p,.2f),Vector3.one*(p.Kind=="life"?2:1.6f),gameCamera,p.Kind=="life"?.7f:.38f);
             }
             foreach(var b in Model.Bullets)
@@ -284,7 +283,7 @@ namespace NeonShooter.Unity
             if(Model.Phase!="crashed" && Model.Phase!="gameover")
             {
                 float progress=Model.Phase=="dying"?Mathf.Clamp01((float)Model.Elapsed/2.4f):0;
-                bool visible=Model.Player.Invulnerable<=0 || ((int)(visualTime*14)%2==0) || reducedMotion;
+                bool visible=Model.Player.Invulnerable<=0 || ((int)(visualTime*14)%2==0);
                 if(visible) Draw("hero",Model.Player,.75f*(1-progress*.75f),-(float)Model.Player.Z,(float)Model.Player.Bank*Mathf.Rad2Deg);
                 if(Model.Phase!="dying")
                 {
@@ -299,7 +298,7 @@ namespace NeonShooter.Unity
                 float cloud=b.Size*(7+age*5);
                 assets.Glow(b.Color,b.Position,new Vector3(cloud,cloud,1),gameCamera,fade*fade*.8f);
                 assets.Glow(b.Color,b.Position,new Vector3(cloud*.45f,cloud*.45f,1),gameCamera,fade*.7f);
-                float core=Mathf.Clamp01(1-age/(reducedMotion?.18f:.28f));
+                float core=Mathf.Clamp01(1-age/.28f);
                 assets.Glow("#fff9cc",b.Position,Vector3.one*b.Size*(1+core),gameCamera,core,0,true);
             }
             foreach(var p in particles)
@@ -308,7 +307,7 @@ namespace NeonShooter.Unity
                 float size=p.Size*(.4f+.6f*fade);
                 assets.Glow(p.Color,p.Position,Vector3.one*size*4.5f,gameCamera,fade*.48f);
                 assets.Glow(p.Color,p.Position,Vector3.one*size,gameCamera,fade,0,true);
-                if(!p.Spark || reducedMotion) continue;
+                if(!p.Spark) continue;
                 // Sample a tapered, curved comet tail along the spark's recent path.
                 float tailTime=Mathf.Min(.22f,p.MaxLife-p.Life);
                 for(int j=1;j<=5;j++)
@@ -348,7 +347,6 @@ namespace NeonShooter.Unity
             Draw(e.Kind+"gun",e,scale,7.5f,(float)e.Aim*Mathf.Rad2Deg);
         }
         void ToggleSound() { audioPlayer.SetMuted(!audioPlayer.Muted); menuMusic.SetMuted(audioPlayer.Muted); PlayerPrefs.SetInt("neon-shooter.muted",audioPlayer.Muted?1:0); }
-        void ToggleMotion() { reducedMotion=!reducedMotion; bloom.ReducedMotion=reducedMotion; Model.ScenerySpeed=reducedMotion?.072:3.6; PlayerPrefs.SetInt("neon-shooter.reduced-motion",reducedMotion?1:0); }
         void OnDestroy() { if(Model!=null) Model.OnEvent-=Handle; assets?.Dispose(); DisposeUi(); }
     }
 }

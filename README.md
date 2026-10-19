@@ -27,8 +27,7 @@ ACES output in linear colour space.
 The menu plays the supplied **The Return of the 8 Bit Era** track, with a random
 **2–4 second silent gap** between repeats. Launching switches to gameplay music;
 returning to the briefing restarts the menu track. Sound Off mutes both players.
-Reduced Motion keeps effects gentler. Local native records remain separate from
-the browser's records.
+Local native records remain separate from the browser's records.
 
 | Action | Control |
 | --- | --- |
@@ -41,10 +40,9 @@ the browser's records.
 | Touch | Drag to move and auto-fire; on-screen missile button |
 | Audio | Sound On/Off |
 
-Losing application focus pauses flight. The briefing includes reduced-motion,
-personal bests and the last ten battles. Records use Unity PlayerPrefs and are
+Losing application focus pauses flight. The briefing includes personal bests and the last ten battles. Records use Unity PlayerPrefs and are
 separate from browser localStorage. Abandoning a started flight via **Flight
-Briefing** also records it. Sound and reduced-motion preferences persist locally.
+Briefing** also records it. Sound preferences persist locally.
 
 ## Included gameplay and assets
 
@@ -76,8 +74,7 @@ native briefing. Refer to [port mapping](docs/port-map.md) for implementation de
 ## Add-on refinements
 
 All twelve pickup types are checked against the sibling browser catalogue. Rotating
-orbital guards leave a shrinking block ribbon and drifting particles, with shorter
-trails in Reduced Motion. Ground cars render at 80% of their former size and have
+orbital guards leave a shrinking block ribbon and drifting particles. Ground cars render at 80% of their former size and have
 individual speeds around 2.5 times their former pace. They steer gently around
 other vehicles, ground defences and the shader's procedural trees and roofs, then
 re-enter below the arena while assault support is active.

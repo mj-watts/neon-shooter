@@ -31,12 +31,12 @@ namespace NeonShooter.Tests
             });
             test("orbital trails emit blocks and particles, freeze, expire and clear", () => {
                 var trails=new OrbitalTrails(); var g=Game(); g.CollectPowerup("orbit");
-                for(int i=0;i<60;i++) { g.Update(1.0/120,new FlightInput()); trails.Update(g.Orbs,g.Player,1.0/120,false); }
+                for(int i=0;i<60;i++) { g.Update(1.0/120,new FlightInput()); trails.Update(g.Orbs,g.Player,1.0/120); }
                 True(trails.Points.Any(p=>p.Particle)); True(trails.Points.Any(p=>!p.Particle));
                 True(trails.Points.Count<=OrbitalTrails.Capacity);
-                double age=trails.Points[0].Age; trails.Update(g.Orbs,g.Player,0,false); Near(age,trails.Points[0].Age);
-                trails.Update(new Entity[0],g.Player,1,false); Equal(0,trails.Points.Count);
-                trails.Update(g.Orbs,g.Player,.05,false); trails.Clear(); Equal(0,trails.Points.Count);
+                double age=trails.Points[0].Age; trails.Update(g.Orbs,g.Player,0); Near(age,trails.Points[0].Age);
+                trails.Update(new Entity[0],g.Player,1); Equal(0,trails.Points.Count);
+                trails.Update(g.Orbs,g.Player,.05); trails.Clear(); Equal(0,trails.Points.Count);
             });
             test("ground driving sees the shader's buildings and trees", () => {
                 int obstacles=0,clear=0;

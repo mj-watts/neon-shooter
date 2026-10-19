@@ -46,8 +46,7 @@ applied in simulation, so weapons, targeting and collisions follow the visible
 positions. `CanyonTerrain` supplies the shared rates and lateral offsets to the
 simulation and renderer.
 
-Native URP bloom uses HDR highlights, a 0.75 threshold and an intensity of 2.8
-(1.1 with reduced motion). Radial halos retain emissive color and rotate with
+Native URP bloom uses HDR highlights, a 0.65 threshold and an intensity of 4.5. Radial halos retain emissive color and rotate with
 beams. Button styles explicitly set white text for all eight IMGUI states and
 use 56-unit square targets with neon borders. UI sizing is recalculated during
 OnGUI for the active viewport, avoiding stale sizing between Editor Game views.

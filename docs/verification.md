@@ -94,7 +94,7 @@ browser-rendering parity is claimed.
   previous soundtrack before starting the next.
 - Real output samples drive RMS energy and transient detection. Menu title, button
   borders, canyon tint, bloom, exhaust and ship dance respond to this signal.
-  Sound Off silences both players; Reduced Motion disables pulses and ship motion.
+  Sound Off silences both players.
 - 62 Edit Mode tests and 4 Play Mode tests passed, including actual natural clip
   completion/restart and menu-to-flight transitions. 121 headless checks passed.
 - Production C# compilation: zero warnings and errors. Asset verification passed.
@@ -118,7 +118,7 @@ record storage remain in use.
   colours, durations, weights and collection outcomes. Each has a native icon;
   the rendering smoke test activates the complete catalogue.
 - Orbital guards leave bounded block ribbons and drifting particles. Trails
-  follow the hero's position, shorten in Reduced Motion, freeze on pause, expire
+  follow the hero's position, freeze on pause, expire
   after the guard disappears and clear on relaunch or return to briefing.
 - Ground cars use 80% scale, individual speeds around 2.5 times the previous
   pace, modest heading changes and local avoidance. The terrain sampler follows

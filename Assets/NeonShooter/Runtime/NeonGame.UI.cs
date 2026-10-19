@@ -233,7 +233,6 @@ namespace NeonShooter.Unity
             if(Button(width/2-96,y+370,192,"LAUNCH FLIGHT ↗",true)) Launch();
             Text(0,y+453,width,20,"PRESS LAUNCH WHEN READY",10,"#ae9cc5");
             if(Button(32,height-65,130,audioPlayer.Muted?"SOUND OFF":"SOUND ON")) ToggleSound();
-            if(Button(180,height-65,205,reducedMotion?"REDUCED MOTION ON":"REDUCED MOTION OFF")) ToggleMotion();
             if(Button(width-200,height-65,168,"PAST BATTLES")) historyVisible=true;
         }
         void DrawControls(float x,float y,bool launch)

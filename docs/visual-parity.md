@@ -10,8 +10,7 @@ The later request for over-the-top fireworks supersedes the original effect
 strength match. Unity now uses four staggered spark shells, roughly twice as
 many burning sparks, tapered comet tails, and coloured blast light lasting
 1.05 seconds instead of a 65 ms flash. Projectiles have larger, brighter halos.
-Native URP bloom is 4.5 with a 0.65 threshold and 0.88 scatter. Reduced Motion
-retains bright illumination (3.2 bloom), with fewer shells and no comet tails.
+Native URP bloom is 4.5 with a 0.65 threshold and 0.88 scatter.
 
 Fresh native Unity screenshots are in `TestResults/Fireworks/bursts.png` and
 `TestResults/Fireworks/trails.png`; these show the same three size-1.5 blasts
@@ -44,7 +43,7 @@ Source mapping:
 | `FleetDesigns.js` | `Core/SpriteCatalog.cs` |
 | `CanyonBackground.js`, `TerrainScenery.js` | `Resources/Shaders/Canyon.shader` |
 | Exhaust and round-particle GLSL | `Resources/Shaders/Exhaust.shader`, `Spark.shader` |
-| `BlockExplosionRing.js` | Four delayed, 48-fragment rings (two with Reduced Motion) in `NeonGame.cs`, `ExplosionBlock.shader` |
+| `BlockExplosionRing.js` | Four delayed, 48-fragment rings in `NeonGame.cs`, `ExplosionBlock.shader` |
 | UnrealBloom / ACES | Native URP volume in `Runtime/NeonBloom.cs` |
 
 The original OffBit, OffBit101 and Nohemi fonts are retained. Neue Power was
@@ -99,7 +98,6 @@ resolution on Retina displays, and capture all five states.
 
 The rendering engines use different bloom kernels, font rasterizers and GPU
 noise precision. Terrain patterns and individual random explosion fragments
-therefore differ. The Unity briefing retains native Sound / Reduced Motion /
-Past Battles controls, and does not reproduce the surrounding website's long
+therefore differ. The Unity briefing retains native Sound / Past Battles controls, and does not reproduce the surrounding website's long
 scrolling article. Screenshot comparisons support the matched visual style,
 not a claim of bit-identical rendering or complete animation parity.

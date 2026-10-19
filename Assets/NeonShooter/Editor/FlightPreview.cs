@@ -73,11 +73,6 @@ namespace NeonShooter.Editor
             bool menuAudio=Environment.GetCommandLineArgs().Contains("-neonMenuAudioVerify") && (stage==1 || stage==7 || stage==8);
             root.GetComponent<FlightAudio>().SetMuted(!menuAudio);
             bool parity=Environment.GetCommandLineArgs().Contains("-neonVisualParity");
-            if(parity && root.Model!=null)
-            {
-                typeof(NeonGame).GetField("reducedMotion",System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic).SetValue(root,false);
-                root.GetComponentInChildren<NeonBloom>().ReducedMotion=false;
-            }
             if(parity && stage>=3 && stage!=12)
             {
                 root.Model.Enemies.Clear(); root.Model.Bullets.Clear(); root.Model.Pickups.Clear();
