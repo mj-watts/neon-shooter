@@ -36,6 +36,63 @@ namespace NeonShooter.Tests
             return total/count;
         }
         [UnityTest]
+        public IEnumerator SimultaneousExplosionsKeepDistantPlayfieldVisible()
+        {
+            var root=Object.FindAnyObjectByType<NeonGame>();
+            if(root==null) root=new GameObject("Local explosion regression").AddComponent<NeonGame>();
+            yield return null;
+            root.Launch(); root.enabled=false;
+            var camera=root.GetComponentInChildren<Camera>();
+            var controller=camera.GetComponent<NeonBloom>();
+            camera.orthographicSize=16;
+            var target=new RenderTexture(1280,800,24,RenderTextureFormat.ARGBHalf);
+            camera.targetTexture=target;
+            var previous=RenderTexture.active;
+            Texture2D baseline=null,burst=null;
+            Texture2D ReadFlight()
+            {
+                root.SendMessage("LateUpdate");
+                RenderPipeline.SubmitRenderRequest(camera,new UniversalRenderPipeline.SingleCameraRequest { destination=target });
+                RenderTexture.active=target;
+                var image=new Texture2D(target.width,target.height,TextureFormat.RGBAFloat,false);
+                image.ReadPixels(new Rect(0,0,target.width,target.height),0,0); image.Apply();
+                RenderTexture.active=previous;
+                return image;
+            }
+            try
+            {
+                controller.MusicPulse=controller.BlastPulse=0; controller.SendMessage("Update");
+                baseline=ReadFlight();
+                foreach(var colour in new[]{"cyan","gold","pink"})
+                    for(int i=0;i<2;i++) root.SendMessage("Handle",new NeonShooter.Core.GameEvent { Type="explosion",X=(i*2-1)*3,Y=0,Size=1.5,Color=colour });
+                root.SendMessage("UpdateEffects",.12f);
+                controller.SendMessage("Update");
+                burst=ReadFlight();
+                float distantLift=0; int distantCount=0,white=0;
+                for(int y=0;y<target.height;y++) for(int x=0;x<target.width;x++)
+                {
+                    var before=baseline.GetPixel(x,y); var after=burst.GetPixel(x,y);
+                    if(QualitySettings.activeColorSpace==ColorSpace.Linear) { before=before.gamma; after=after.gamma; }
+                    if(after.r>.9f && after.g>.9f && after.b>.9f) white++;
+                    // Top and bottom strips are at least ten world units from the blasts.
+                    if(y<150 || y>=650) { distantLift+=Mathf.Max(0,((after.r+after.g+after.b)-(before.r+before.g+before.b))/3); distantCount++; }
+                }
+                float lift=distantLift/distantCount,whiteFraction=white/(float)(target.width*target.height);
+                Directory.CreateDirectory("TestResults");
+                File.WriteAllBytes("TestResults/local-explosions.png",burst.EncodeToPNG());
+                File.WriteAllText("TestResults/local-explosions.txt","Distant brightness added: "+lift+"\nWhite screen fraction: "+whiteFraction);
+                Assert.That(lift,Is.LessThan(.05f),"Explosion glow must stay near its source");
+                Assert.That(whiteFraction,Is.LessThan(.04f),"Overlapping explosions must not bleach the playfield");
+            }
+            finally
+            {
+                RenderTexture.active=previous; camera.targetTexture=null; target.Release();
+                Object.Destroy(target); if(baseline!=null) Object.Destroy(baseline); if(burst!=null) Object.Destroy(burst);
+                Object.Destroy(root.gameObject);
+            }
+            yield return null;
+        }
+        [UnityTest]
         public IEnumerator FireworksRemainLuminousThenExpireAndMaterialsStayBounded()
         {
             var root=Object.FindAnyObjectByType<NeonGame>();
