@@ -294,10 +294,10 @@ namespace NeonShooter.Unity
             foreach(var b in blasts)
             {
                 float age=b.MaxLife-b.Life,fade=b.Life/b.MaxLife;
-                // The coloured light outlives the hot core, like an aerial firework.
-                float cloud=b.Size*(7+age*5);
-                assets.Glow(b.Color,b.Position,new Vector3(cloud,cloud,1),gameCamera,fade*fade*.8f);
-                assets.Glow(b.Color,b.Position,new Vector3(cloud*.45f,cloud*.45f,1),gameCamera,fade*.7f);
+                // A compact coloured halo outlives the hot core without filling the arena.
+                float cloud=b.Size*(3.2f+age*1.5f);
+                assets.Glow(b.Color,b.Position,new Vector3(cloud,cloud,1),gameCamera,fade*fade*.35f);
+                assets.Glow(b.Color,b.Position,new Vector3(cloud*.45f,cloud*.45f,1),gameCamera,fade*.45f);
                 float core=Mathf.Clamp01(1-age/.28f);
                 assets.Glow("#fff9cc",b.Position,Vector3.one*b.Size*(1+core),gameCamera,core,0,true);
             }

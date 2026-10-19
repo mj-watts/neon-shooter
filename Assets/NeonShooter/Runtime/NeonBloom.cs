@@ -7,7 +7,7 @@ namespace NeonShooter.Unity
     [RequireComponent(typeof(Camera))]
     public sealed class NeonBloom : MonoBehaviour
     {
-        public const float StandardIntensity=4.5f, Threshold=.65f, Scatter=.88f;
+        public const float StandardIntensity=1.5f, Threshold=.9f, Scatter=.45f;
         public float MusicPulse;
         public float BlastPulse;
         Volume volume;
@@ -26,7 +26,10 @@ namespace NeonShooter.Unity
             profile=volume.profile;
             if(!profile.TryGet(out bloom)) bloom=profile.Add<Bloom>(true);
             bloom.threshold.Override(Threshold); bloom.scatter.Override(Scatter);
-            bloom.highQualityFiltering.Override(true); bloom.maxIterations.Override(8);
+            // Keep the bloom pyramid shallow so bright pixels illuminate their neighbours,
+            // rather than bleeding into a screen-wide veil during chain explosions.
+            bloom.highQualityFiltering.Override(true); bloom.maxIterations.Override(4);
+            bloom.clamp.Override(4f);
             if(!profile.TryGet<Tonemapping>(out var tone)) tone=profile.Add<Tonemapping>(true);
             tone.mode.Override(TonemappingMode.ACES);
             if(!profile.TryGet<ColorAdjustments>(out var colour)) colour=profile.Add<ColorAdjustments>(true);
@@ -35,7 +38,7 @@ namespace NeonShooter.Unity
         }
         void Update()
         {
-            if(bloom!=null) bloom.intensity.Override(StandardIntensity*(1+Mathf.Clamp01(MusicPulse)*.45f+Mathf.Clamp01(BlastPulse)*.6f));
+            if(bloom!=null) bloom.intensity.Override(StandardIntensity*(1+Mathf.Clamp01(MusicPulse)*.08f+Mathf.Clamp01(BlastPulse)*.12f));
             BlastPulse*=Mathf.Exp(-Time.unscaledDeltaTime*7);
         }
         void OnDisable()
